@@ -2,7 +2,6 @@ import mysql.connector
 from flask import Flask, jsonify, abort, make_response
 from flask.ext.httpauth import HTTPBasicAuth
 
-
 connection_config = {
     'host': 'localhost',
     'database': 'test',
@@ -12,30 +11,29 @@ connection_config = {
 }
 
 class DataBaseManager(object):
-
     def getLibraries(self):
         conn = mysql.connector.connect(**connection_config)
         cur = conn.cursor()
 
-        cur.execute("SELECT Name,Description, Version FROM Libs")
+        cur.execute("SELECT Name, Description, Version FROM Libs")
         list = cur.fetchall()
 
         cur.close()
         conn.close()
 
         return list
+
     def getLibrary(self, lib_id):
         conn = mysql.connector.connect(**connection_config)
         cur = conn.cursor()
 
-        cur.execute("SELECT Name,Description, Version FROM Libs WHERE Id=%s", (lib_id,))
+        cur.execute("SELECT Name, Description, Version FROM Libs WHERE Id=%s", (lib_id,))
         lib = cur.fetchone()
 
         cur.close()
         conn.close()
 
         return lib
-
 
 auth = HTTPBasicAuth()
 
@@ -46,14 +44,18 @@ def get_password(username):
     return None
 
 db = DataBaseManager()
-app = Flask(__name__)
+app = Flask(__name__, static_url_path = '')
+
+@app.route('/', methods=['GET'])
+def root():
+    return app.send_static_file('index.html')
 
 @app.route('/api/libs', methods=['GET'])
 def get_libraries():
     list = db.getLibraries()
     if len(list) == 0:
         abort(404)
-    return jsonify(libs = list)
+    return jsonify(libs=list)
 
 @app.route('/api/libs/<int:lib_id>', methods=['GET'])
 def get_library(lib_id):
