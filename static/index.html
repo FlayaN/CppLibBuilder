@@ -38,24 +38,20 @@
             </div>
             <table class="table table-striped">
                 <thead>
-                    <tr><td style="width: 1px;"></td><td><b>Library</b></td><td><b>Options</b></td></tr>
+                    <tr><td><b>Library</b></td><td><b>Options</b></td></tr>
                 </thead>
                 <tbody data-bind="foreach: libs">
                     <tr>
-                        <td>
-                            <span data-bind="visible: done" class="label label-success">Done</span>
-                            <span data-bind="visible: !done()" class="label label-warning">In Progress</span>
-                        </td>
-                        <td><p><b data-bind="text: title"></b></p><p data-bind="text: description"></p></td>
+                        <td><p><b data-bind="text: name"></b></p><p data-bind="text: description"></p><p data-bind="text: version"></p></td>
                         <td>
                             <button data-bind="click: $parent.beginEdit" class="btn btn-default">Edit</button>
                             <button data-bind="click: $parent.remove" class="btn btn-default">Delete</button>
-                            <span data-bind="visible: done">
+                            <!--<span data-bind="visible: done">
                                 <button data-bind="click: $parent.markInProgress" class="btn btn-default">Mark In Progress</button>
                             </span>
                             <span data-bind="visible: !done()">
                                 <button data-bind="click: $parent.markDone" class="btn btn-default">Mark Done</button>
-                            </span>
+                            </span>-->
                         </td>
                     </tr>
                 </tbody>

@@ -1,17 +1,29 @@
 function LibsViewModel() {
     var self = this;
-    self.libs = ko.observableArray([
-        {
-            title: ko.observable('title #1'),
-            description: ko.observable('description #1'),
-            done: ko.observable(false)
-        },
-        {
-            title: ko.observable('title #2'),
-            description: ko.observable('description #2'),
-            done: ko.observable(true)
-        }
-    ]);
+
+    self.libsURI = 'http://localhost:5000/api/libs';
+    self.username = "admin";
+    self.password = "pass";
+    self.libs = ko.observableArray();
+
+    self.ajax = function(uri, method, data) {
+        var request = {
+            url: uri,
+            type: method,
+            contentType: "application/json",
+            accepts: "application/json",
+            cache: false,
+            dataType: 'json',
+            data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + btoa(self.username + ":" + self.password));
+            },
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+            }
+        };
+        return $.ajax(request);
+    }
 
     self.beginAdd = function() {
         alert("Add");
@@ -22,11 +34,16 @@ function LibsViewModel() {
     self.remove = function(lib) {
         alert("Remove: " + lib.title());
     }
-    self.markInProgress = function(lib) {
-        lib.done(false);
-    }
-    self.markDone = function(lib) {
-        lib.done(true);
-    }
+
+    self.ajax(self.libsURI, 'GET').done(function(data) {
+        for (var i = 0; i < data.libs.length; i++) {
+            self.libs.push({
+                uri: ko.observable(data.libs[i].uri),
+                name: ko.observable(data.libs[i].Name),
+                description: ko.observable(data.libs[i].Description),
+                version: ko.observable(data.libs[i].Version)
+            });
+        }
+    });
 }
 ko.applyBindings(new LibsViewModel());
